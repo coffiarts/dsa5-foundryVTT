@@ -108,8 +108,8 @@
           {{/if}}
         </div>
         <div data-action="setCustomPrice" class="col four center setCustomPrice" data-tooltip="MERCHANT.priceMod">
-          {{item.defaultPrice}}<span class="priceTag">{{item.priceTag}}</span>
-          <input class="customPriceTag" type="number" value="{{item.flags.dsa5.customPriceTag}}" />
+          {{{item.defaultPriceHtml}}}<span class="priceTag">{{{item.priceTagHtml}}}</span>
+          <input class="customPriceTag" type="number" value="{{item.flags.dsa5.customPriceTag}}" data-tooltip="MERCHANT.customPriceBaseHint" />
         </div>
         <div class="col eight flexrow flexAlignCenter">
           <button type="button" class="noBorder dsadesignbutton" data-action="quantityClick" data-tooltip="TT.strgx10"

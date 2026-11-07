@@ -2088,6 +2088,10 @@
     "meleeBotchTableEnabledHint": "Anstatt 1W6+2 SP bei einem Patzer, kann auch diese Tabelle benutzt werden (optionale Regel).",
     "merchantNotification": "Benachrichtigung bei Handel",
     "merchantNotificationHint": "Nach Abschluss des Handels (Schließen des Händlerbogens) eine Chat-Zusammenfassung der Transfers zeigen.",
+    "merchantPriceDisplay": "Preisanzeige im Laden",
+    "merchantPriceDisplayHint": "Leitmünze: Preise werden als ein Betrag in der Leitmünze angezeigt. Leitmünze ist die im Währungskompendium als Leitmünze markierte Münze; ist keine markiert, die Münze mit dem Wert am nächsten an 1 Silbertaler. Vollständige Stückelung: Preise werden wie im Chat auf alle Münzen aufgeteilt.",
+    "merchantPriceDisplayLead": "Leitmünze",
+    "merchantPriceDisplaySplit": "Vollständige Stückelung",
     "moneyHasWeight": "Geld hat Gewicht",
     "moneyHasWeightHint": "Geld zählt zur Traglast und kann die Belastung erhöhen. Standardmäßig ist Geld gewichtslos.",
     "moneyKompendium": "Währungskompendium",
@@ -2906,6 +2910,9 @@
     "otherTradeFriend": "Ziehe einen Akteur für den du Ownerrechte hast auf das Charakterblatt um den Handelspartner zu ändern.",
     "poisonStepBand": "Giftstufenband",
     "priceMod": "Grundpreis / Modifizierter Preis (Doppel-<i class=\"fas fa-computer-mouse\"></i> für eigenen Preis)",
+    "currencyPack": "Globale Währung übersteuern",
+    "currencyPackHint": "Hiermit kann für diesen Händler explizit die global gesetzte Währung übersteuert werden. Dadurch werden alle Preise in der gewählten Währung angezeigt. Leer = Währung aus der Systemeinstellung.",
+    "customPriceBaseHint": "Eigener Preis in Silbertalern (Basiswährung des Systems)",
     "priceTier": {
       "1": "50%",
       "2": "75%",
@@ -2966,7 +2973,7 @@
     "playerAccess": "Spielerzugang",
     "allowDuplicatesHint": "Erlaubt dieselbe Ware als getrennte Stapel, z. B. zwei Zeilen Seil. Aus = vorhandene Identität wird übersprungen oder zusammengeführt.",
     "ammoStackHint": "Zufällige Munition wird in diesem Stapelmaß erzeugt.",
-    "buyPreview": "Liste {list} S: Händler zahlt {shop} S",
+    "buyPreview": "Liste {list}: Händler zahlt {shop}",
     "buyTierHint": "Was der Laden zahlt, wenn Spieler verkaufen. Die Buttons setzen den Kauffaktor.",
     "choseTradefriend": "Handelspartner wählen",
     "clearBanner": "Ladenschild entfernen",
@@ -2981,7 +2988,7 @@
     "identity": "Laden",
     "lockedHint": "Spieler können einen abgeschlossenen Schatz nicht öffnen.",
     "maxPriceHint": "Gegenstände teurer als dieser Silberstück-Wert werden beim Zufallsbefüllen ausgelassen. 0 = kein Limit.",
-    "pricePreview": "Liste {list} S: Laden verlangt {shop} S (Preisstufe {tier})",
+    "pricePreview": "Liste {list}: Laden verlangt {shop} (Preisstufe {tier})",
     "poisonStepBandHint": "Gifte werden gewichtet zwischen Stufe 1 und diesem Wert gewürfelt.",
     "qlBandHint": "Tränke werden gewichtet zwischen QS 1 und diesem Wert gewürfelt. Mehrere QS-Varianten sind erlaubt.",
     "regionHint": "Derzeit nur Pflanzen, Teiltreffer im Regionsfeld. Andere Waren ignorieren das. Schreibweise wie in den Pflanzen-Daten (z. B. Mittelreich). Volle Regionsfilter kommen später.",
@@ -3217,7 +3224,9 @@
   "MoneyType": {
     "0": "Währung",
     "1": "Schnöder Mammon",
-    "descr": "Im Gegensatz zu Mammon werden Währungen bei Bezahlfunktionen und Händlern automatisch berücksichtigt und verwendet."
+    "descr": "Im Gegensatz zu Mammon werden Währungen bei Bezahlfunktionen und Händlern automatisch berücksichtigt und verwendet.",
+    "leadCurrency": "Leitmünze",
+    "leadCurrencyHint": "Preise im Laden werden in dieser Münze angezeigt (sofern Einstellung „Preisanzeige im Laden“ auf „Leitmünze“ gesetzt ist). Pro Kompendium kann nur eine Münze Leitmünze sein."
   },
   "Name": "Name",
   "NarrowSpaceModifiers": {

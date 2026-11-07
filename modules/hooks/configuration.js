@@ -11,13 +11,7 @@ const { renderTemplate } = foundry.applications.handlebars;
 const { NEEDS_MIGRATION_VERSION } = DSA5;
 
 export function setupConfiguration() {
-  const moneyChoices = () => {
-    const moneyChoices = {};
-    for (const pack of game.packs) {
-      if (pack.metadata.type == 'Item' && pack.index.some((x) => x.type == 'money')) moneyChoices[pack.metadata.id] = pack.metadata.id;
-    }
-    return moneyChoices;
-  };
+  const moneyChoices = () => game.dsa5.apps.DSA5_Utility.moneyPackChoices();
   const settings = {
     // Appearance, language & client UI
     globalStyle: {
@@ -820,6 +814,7 @@ export function setupConfiguration() {
       default: '',
       type: new foundry.data.fields.StringField({ choices: moneyChoices }),
       onChange: async (val) => {
+        await game.dsa5.apps.DSA5Payment.refreshCurrencyDisplay();
         const pack = game.packs.get(val);
         if (!pack) return;
 
@@ -830,6 +825,19 @@ export function setupConfiguration() {
             .join(', '),
         );
       },
+    },
+    merchantPriceDisplay: {
+      name: 'DSASETTINGS.merchantPriceDisplay',
+      hint: 'DSASETTINGS.merchantPriceDisplayHint',
+      scope: 'world',
+      config: true,
+      default: 'lead',
+      type: String,
+      choices: {
+        lead: 'DSASETTINGS.merchantPriceDisplayLead',
+        split: 'DSASETTINGS.merchantPriceDisplaySplit',
+      },
+      onChange: () => game.dsa5.apps.DSA5Payment.refreshCurrencyDisplay(),
     },
     moneyHasWeight: {
       name: 'DSASETTINGS.moneyHasWeight',

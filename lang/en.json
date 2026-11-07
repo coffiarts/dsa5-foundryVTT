@@ -2086,6 +2086,10 @@
     "meleeBotchTableEnabledHint": "Instead of taking 1D6+2 DP on a botch, you can use the following table. If the combatant who botched is unarmed, add 5 to die roll results of 6 or less. (optional rule).",
     "merchantNotification": "Trade notification",
     "merchantNotificationHint": "After the trade ends (closing the merchant sheet), post a chat summary of the transfers.",
+    "merchantPriceDisplay": "Shop price display",
+    "merchantPriceDisplayHint": "Lead coin: prices are shown as a single amount in the lead coin. The lead coin is the coin flagged as lead coin in the currency compendium; if none is flagged, the coin whose value is closest to 1 silverthaler. Full denomination: prices are split across all coins, as in chat.",
+    "merchantPriceDisplayLead": "Lead coin",
+    "merchantPriceDisplaySplit": "Full denomination",
     "moneyHasWeight": "Money has weight",
     "moneyHasWeightHint": "Money counts toward carried weight and can increase encumbrance. By default money is weightless.",
     "moneyKompendium": "Currency Compendium",
@@ -2904,6 +2908,9 @@
     "otherTradeFriend": "Drag an actor (that you own) on the sheet to change the trading partner.",
     "poisonStepBand": "Poison step band",
     "priceMod": "Base price / Modified price (Double-<i class=\"fas fa-computer-mouse\"></i> for custom price)",
+    "currencyPack": "Override global currency",
+    "currencyPackHint": "Explicitly overrides the globally configured currency for this merchant. All prices are then shown in the selected currency. Empty = currency from the system setting.",
+    "customPriceBaseHint": "Custom price in silverthalers (system base currency)",
     "priceTier": {
       "1": "50%",
       "2": "75%",
@@ -2964,7 +2971,7 @@
     "playerAccess": "Player access",
     "allowDuplicatesHint": "Allows the same good as separate stacks, e.g. two lines of rope. Off = existing identity is skipped or merged.",
     "ammoStackHint": "Random ammunition is created in this stack size.",
-    "buyPreview": "List {list} S: shop pays {shop} S",
+    "buyPreview": "List {list}: shop pays {shop}",
     "buyTierHint": "What the shop pays when players sell. The buttons set the buy factor.",
     "choseTradefriend": "Choose trading partner",
     "clearBanner": "Clear shop sign",
@@ -2979,7 +2986,7 @@
     "identity": "Shop",
     "lockedHint": "Players cannot open a locked treasure pile.",
     "maxPriceHint": "Items costing more than this Silverthaler value are skipped during random fill. 0 = no cap.",
-    "pricePreview": "List {list} S: shop asks {shop} S (price tier {tier})",
+    "pricePreview": "List {list}: shop asks {shop} (price tier {tier})",
     "poisonStepBandHint": "Poisons are rolled weighted between step 1 and this value.",
     "qlBandHint": "Potions are rolled weighted between QL 1 and this value. Multiple QL variants are allowed.",
     "regionHint": "Currently plants only, partial match on the region field. Other goods ignore this. Full region filters come later.",
@@ -3215,7 +3222,9 @@
   "MoneyType": {
     "0": "Currency",
     "1": "Mammon",
-    "descr": "In contrast to Mammon, currency is automatically taken into account and used in payment functions and merchants."
+    "descr": "In contrast to Mammon, currency is automatically taken into account and used in payment functions and merchants.",
+    "leadCurrency": "Lead coin",
+    "leadCurrencyHint": "Shop prices are shown in this coin (given that setting \"Shop price display\" is set to \"lead coin\"). Only one coin per compendium can be the lead coin."
   },
   "Name": "Name",
   "NarrowSpaceModifiers": {

@@ -48,6 +48,15 @@ export default class DSA5_Utility {
       .map(item => ({ ...item, system: { ...item.system, quantity: { value: 0 } } }));
   }
 
+  /** Item compendia containing money items: { packId: packId }. Shared by the global setting and shop overrides. */
+  static moneyPackChoices() {
+    const choices = {};
+    for (const pack of game.packs) {
+      if (pack.metadata.type == 'Item' && pack.index.some((x) => x.type == 'money')) choices[pack.metadata.id] = pack.metadata.id;
+    }
+    return choices;
+  }
+
   static getLanguagePack() {
     return game.i18n.lang === 'de' ? 'dsa5.skills' : 'dsa5.skillsen';
   }

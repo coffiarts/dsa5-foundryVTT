@@ -4,6 +4,116 @@ import DSA5_Utility from '../helpers/utility-dsa5.js';
 import DiceDSA5 from '../rolls/dice-dsa5.js';
 
 export default class DSA5Payment {
+
+  /** Currency sets per compendium id: { currencies (largest first, Mammon excluded), lead }. */
+  static #currencySets = new Map();
+
+  /** Resolve a money compendium id: explicit id, else the global setting, else the system language pack. */
+  static currencyPackId(packId = '') {
+    for (const id of [packId, game.settings.get('dsa5', 'moneyKompendium')]) {
+      if (id && game.packs.get(id)) return id;
+    }
+    return DSA5_Utility.getLanguagePack();
+  }
+
+  /** Load (or reload) the currencies of one compendium into the cache. */
+  static async loadCurrencies(packId = '') {
+    const id = this.currencyPackId(packId);
+    const items = await DSA5_Utility.getCompendiumEntries(id, 'money');
+    const currencies = items
+      .filter((x) => x.system.subcategory != 1)
+      .sort((a, b) => b.system.price.value - a.system.price.value)
+      .map((x) => ({
+        name: _loc(x.name),
+        value: Number(x.system.price.value),
+        img: x.img,
+        lead: !!x.flags?.dsa5?.leadCurrency,
+      }));
+    const names = currencies.map((c) => c.name);
+    for (const c of currencies) c.abbr = this.#abbreviate(c.name, names);
+    const set = { currencies, lead: this.#pickLeadCurrency(currencies) };
+    this.#currencySets.set(id, set);
+    return set;
+  }
+
+  /** Cached currency set of a compendium (synchronous); null if not loaded yet. */
+  static currenciesFor(packId = '') {
+    return this.#currencySets.get(this.currencyPackId(packId)) ?? null;
+  }
+
+  static async refreshCurrencyCache() {
+    return (await this.loadCurrencies()).currencies;
+  }
+
+  /** Flagged lead coin wins; otherwise the coin whose value is closest to 1 S (ratio, not difference). */
+  static #pickLeadCurrency(currencies) {
+    const flagged = currencies.filter((c) => c.lead);
+    if (flagged.length > 1) {
+      console.warn(`DSA5 | Multiple lead currencies flagged (${flagged.map((c) => c.name).join(', ')}), using ${flagged[0].name}`);
+    }
+    if (flagged.length) return flagged[0];
+    return currencies
+      .filter((c) => c.value > 0)
+      .reduce((best, c) => (!best || Math.abs(Math.log(c.value)) < Math.abs(Math.log(best.value)) ? c : best), null);
+  }
+
+  /** Find the shortest unique prefix (min. 1 letter) for each coin, e.g. conflicting names "Dukat"/"Denar" -> "Du"/"De". */
+  static #abbreviate(name, allNames) {
+    const others = allNames.filter((n) => n !== name).map((n) => n.toLowerCase());
+    for (let k = 1; k <= name.length; k++) {
+      const prefix = name.slice(0, k).toLowerCase();
+      if (!others.some((o) => o.startsWith(prefix))) return name.slice(0, k);
+    }
+    return name;
+  }
+
+  /** Reload one compendium's currencies (default: the global one) and re-render open merchant sheets. */
+  static async refreshCurrencyDisplay(packId = '') {
+    await this.loadCurrencies(packId);
+    for (const app of foundry.applications.instances.values()) {
+      if (app.actor?.isMerchant?.()) app.render();
+    }
+  }
+
+  /** Keep the currency cache in sync with coin edits in the global or any shop-used money compendium. Call once on ready. */
+  static registerCurrencyHooks() {
+    const onMoneyItemChange = (item) => {
+      if (item.type !== 'money' || !item.pack) return;
+      if (item.pack !== this.currencyPackId() && !this.#currencySets.has(item.pack)) return;
+      this.refreshCurrencyDisplay(item.pack);
+    };
+    for (const hook of ['createItem', 'updateItem', 'deleteItem']) Hooks.on(hook, onMoneyItemChange);
+    Hooks.on('updateItem', (item, changes, _options, userId) => this.#enforceSingleLeadCurrency(item, changes, userId));
+  }
+
+  /** Flagging a lead coin unflags all other coins in the same compendium (radio behaviour). */
+  static async #enforceSingleLeadCurrency(item, changes, userId) {
+    if (userId !== game.user.id || item.type !== 'money' || !item.pack) return;
+    if (foundry.utils.getProperty(changes, 'flags.dsa5.leadCurrency') !== true) return;
+    const others = (await game.packs.get(item.pack).getDocuments())
+      .filter((x) => x.type === 'money' && x.id !== item.id && x.getFlag('dsa5', 'leadCurrency'));
+    for (const other of others) await other.unsetFlag('dsa5', 'leadCurrency');
+  }
+
+  /**
+   * Split a silverthaler amount into coins, largest first. A remainder the smallest coin cannot
+   * represent is rounded up by one smallest coin. Shared by payment and price display.
+   * @param {number} money
+   * @param {{value: number}[]} currencies sorted by value, descending
+   * @returns {object[]} each currency entry plus its `amount`
+   */
+  static splitAmount(money, currencies) {
+    const res = [];
+    let remaining = money;
+    for (const currency of currencies) {
+      const amount = Math.floor(remaining / currency.value);
+      res.push({ ...currency, amount });
+      remaining -= amount * currency.value;
+    }
+    if (remaining > 0.001 && res.length) res[res.length - 1].amount += 1;
+    return res;
+  }
+
   static async executePayment(actor, mode, moneyString, options = {}) {
     const { silent = false, render = true, showChatMessage = !silent, notifyOnFailure = silent, track = !silent, description = '', showDice = true } = options;
 
@@ -261,21 +371,8 @@ export default class DSA5Payment {
       (a, b) => b.system.price.value - a.system.price.value,
     );
 
-    const res = [];
-    let remainingSum = money;
-    for (const currency of availableCurrencies) {
-      const amount = Math.floor(remainingSum / currency.system.price.value);
-      res.push({
-        name: currency.name,
-        amount,
-        img: currency.img,
-      });
-      remainingSum -= amount * currency.system.price.value;
-    }
-
-    if (remainingSum > 0.001) res[res.length - 1].amount += 1;
-
-    return res;
+    const coins = availableCurrencies.map((currency) => ({ name: currency.name, img: currency.img, value: currency.system.price.value }));
+    return this.splitAmount(money, coins).map(({ name, amount, img }) => ({ name, amount, img }));
   }
 
   static _parseMoneyString(moneyString) {

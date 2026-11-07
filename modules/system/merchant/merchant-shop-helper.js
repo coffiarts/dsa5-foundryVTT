@@ -5,6 +5,8 @@
 import MerchantConfig from '../../config/merchant-config.js';
 import DSA5 from '../../config/config-dsa5.js';
 import ImageFramePicker from '../helpers/image-frame-picker.js';
+import MerchantStallHelper from './merchant-stall.js';
+import DSA5_Utility from '../helpers/utility-dsa5.js';
 
 export default class MerchantShopHelper {
   static shopUpdate(actor, shopFields) {
@@ -207,10 +209,11 @@ export default class MerchantShopHelper {
       shopBannerCustom: !!MerchantConfig.shopOf(actor)?.shopImage,
       shopBannerVars: ImageFramePicker.buildBannerVars(MerchantConfig.shopBannerFrame(actor)),
       showShopTab: merchant.merchantType === 'merchant',
+      currencyPackChoices: DSA5_Utility.moneyPackChoices(),
       priceTierSteps: MerchantConfig.priceTierSteps(priceTier),
       buyTierSteps: MerchantConfig.priceTierSteps(buyTier),
-      sellPreview: MerchantConfig.previewPrice(sellingFactor),
-      buyPreview: MerchantConfig.previewPrice(buyingFactor),
+      sellPreview: this.#previewLabels(MerchantConfig.previewPrice(sellingFactor), actor),
+      buyPreview: this.#previewLabels(MerchantConfig.previewPrice(buyingFactor), actor),
       enhanceChancePercent: Math.round((Number(shop.enhanceChance) || 0) * 100),
       fillCategories,
       merchantTypeLabel: DSA5.merchantTypes[merchant.merchantType] || merchant.merchantType,
@@ -219,4 +222,14 @@ export default class MerchantShopHelper {
       garadanSteps: MerchantConfig.garadanSteps(merchant.garadan),
     };
   }
+
+  /** Currency-aware labels for the price tier preview (list/shop are silverthaler numbers). */
+  static #previewLabels(preview, actor) {
+    return {
+      ...preview,
+      listLabel: MerchantStallHelper.formatMoney(preview.list, actor),
+      shopLabel: MerchantStallHelper.formatMoney(preview.shop, actor),
+    };
+  }
+
 }

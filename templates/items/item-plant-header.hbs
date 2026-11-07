@@ -21,9 +21,13 @@
     </div>
     <div class='row-section'>
       <div class='col four'>
-        <label data-tooltip='UNITS.money' class='label-text table-title'>{{localize 'price'}}</label>
+        <label {{#unless customPriceHtml}}data-tooltip='UNITS.money'{{/unless}} class='label-text table-title'>{{localize 'price'}}</label>
       </div>
-      {{#if customPrice}}
+      {{#if customPriceHtml}}
+      <div class='col fourty'>
+        <span>{{{customPriceHtml}}}</span>
+      </div>
+      {{else if customPrice}}
       <div class='col fourty'>
         <input data-tooltip='UNITS.money' class='input-text' type='number' value='{{customPrice}}' readonly />
       </div>

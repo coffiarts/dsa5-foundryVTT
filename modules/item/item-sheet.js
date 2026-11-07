@@ -23,6 +23,7 @@ import ItemDisease from './item-disease.js';
 import ItemPoison from './item-poison.js';
 import TreatmentHelper from '../system/enhancement/treatment-helper.js';
 import MerchantStallHelper from '../system/merchant/merchant-stall.js';
+import DSA5Payment from '../system/payment/payment.js';
 import TrapFlow from '../system/automation/trap-flow.js';
 import CompanionLoyalty from '../actor/companions/companion-loyalty.js';
 
@@ -301,6 +302,10 @@ export default class ItemSheetdsa5 extends AppV2Mixin(foundry.applications.api.H
         const shopPrice = MerchantStallHelper.playerFacingPrice(this.item, this.actor);
         data.customPrice = shopPrice;
         data.calculatedPrice = shopPrice;
+        // Shop-specific currency compendium may not be cached yet when the item sheet opens on its own
+        const currencyPack = this.actor.system.merchant?.shop?.currencyPack;
+        if (currencyPack && !DSA5Payment.currenciesFor(currencyPack)) await DSA5Payment.loadCurrencies(currencyPack);
+        data.customPriceHtml = MerchantStallHelper.formatMoneyHtml(shopPrice, this.actor);
       } else {
         const customPrice = getProperty(this.item, 'flags.dsa5.customPriceTag');
         if (customPrice) data.customPrice = customPrice;

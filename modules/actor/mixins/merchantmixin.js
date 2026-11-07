@@ -1235,6 +1235,9 @@ export const MerchantSheetMixin = (superclass) =>
 
     async _prepareContext(_options) {
       const data = await super._prepareContext(_options);
+      // Shop-specific currency compendium: load once so synchronous price formatting can use it
+      const currencyPack = this.actor.system.merchant?.shop?.currencyPack;
+      if (currencyPack && !DSA5Payment.currenciesFor(currencyPack)) await DSA5Payment.loadCurrencies(currencyPack);
       data.merchantType = this.actor.system.merchant.merchantType || 'none';
       data.invName = DSA5.merchantTypes[data.merchantType];
       data.players = game.users
@@ -1315,7 +1318,9 @@ export const MerchantSheetMixin = (superclass) =>
           for (const item of value.items) {
             item.defaultPrice = MerchantStallHelper.listPrice(item);
             item.calculatedPrice = MerchantStallHelper.playerFacingPrice(item, this.actor);
-            item.priceTag = ` / ${item.calculatedPrice}`;
+            // Currency-aware display for the GM stock list
+            item.defaultPriceHtml = MerchantStallHelper.formatMoneyHtml(item.defaultPrice, this.actor);
+            item.priceTagHtml = ` / ${MerchantStallHelper.formatMoneyHtml(item.calculatedPrice, this.actor)}`;
           }
         }
       } else if (data.merchantType == 'loot') {

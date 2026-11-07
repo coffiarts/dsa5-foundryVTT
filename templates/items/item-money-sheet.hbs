@@ -1,3 +1,10 @@
 <div class='tab standard-form scrollable {{tabs.details.cssClass}} gap5px' data-tab='details' data-group='{{tabs.details.group}}'>
   {{formGroup systemFields.subcategory value=document.system.subcategory localize=true}}
+  {{#unless (eq document.system.subcategory 1)}}
+    <div class="form-group">
+      <label>{{localize 'MoneyType.leadCurrency'}}</label>
+      <input type="checkbox" name="flags.dsa5.leadCurrency" {{checked document.flags.dsa5.leadCurrency}} />
+      <p class="hint">{{localize 'MoneyType.leadCurrencyHint'}}</p>
+    </div>
+  {{/unless}}
 </div>

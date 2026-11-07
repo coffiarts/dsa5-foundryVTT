@@ -14,6 +14,7 @@ import { connectSocket } from './socket.js';
 import registerGameManual from '../journal/game_manual.js';
 import { showWelcomeApp } from '../system/maintenance/migrator.js';
 import ShapeshiftWizard from '../wizards/shapeshift_wizard.js';
+import DSA5Payment from '../system/payment/payment.js';
 
 const DSA_TOKENIZER_FRAMES = {
   friendly: 'systems/dsa5/icons/backgrounds/token_green.webp',
@@ -43,6 +44,9 @@ Hooks.on('tokenizer-2.registerFrames', (registry) => {
 export default function () {
   Hooks.on('ready', async () => {
     connectSocket();
+
+    await DSA5Payment.refreshCurrencyCache();
+    DSA5Payment.registerCurrencyHooks();
 
     if (DSA5_Utility.moduleEnabled('vtta-tokenizer') && !game.settings.get('dsa5', 'tokenizerSetup') && game.user.isGM) {
       await game.settings.set('vtta-tokenizer', 'default-frame-pc', `[data] ${DSA_TOKENIZER_FRAMES.friendly}`);

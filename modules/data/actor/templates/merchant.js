@@ -177,6 +177,7 @@ export default class MerchantTemplate extends DSADataModel {
             label: 'MERCHANT.poisonStepBand',
           }),
           ammoStack: new NumberField({ initial: 20, integer: true, min: 1, label: 'MERCHANT.ammoStack' }),
+          currencyPack: new StringField({ initial: '', label: 'MERCHANT.currencyPack' }),
         }, { required: false, nullable: true, initial: null }),
       }),
     };

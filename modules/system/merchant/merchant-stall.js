@@ -6,6 +6,7 @@ import DSA5 from '../../config/config-dsa5.js';
 import MerchantConfig from '../../config/merchant-config.js';
 import DSA5_Utility from '../helpers/utility-dsa5.js';
 import MerchantStockService from './merchant-stock-service.js';
+import DSA5Payment from '../payment/payment.js';
 
 const { getProperty } = foundry.utils;
 
@@ -46,8 +47,35 @@ export default class MerchantStallHelper {
     return Number(parseFloat(`${Number(value) || 0}`).toFixed(2));
   }
 
-  static formatMoney(value) {
-    return `${this.roundMoney(value)} S`;
+  /**
+   * Coins to display for a silverthaler amount, per setting `merchantPriceDisplay`:
+   * 'lead' = one (possibly fractional) amount in the lead coin, 'split' = full denomination as in chat.
+   * @returns {object[]|null} null while the currency cache is not loaded yet
+   */
+  static splitCoins(value, actor = null) {
+    const set = DSA5Payment.currenciesFor(actor?.system?.merchant?.shop?.currencyPack);
+    if (!set?.currencies.length) return null;
+    const { currencies, lead } = set;
+    if (game.settings.get('dsa5', 'merchantPriceDisplay') === 'lead' && lead) {
+      const amount = this.roundMoney(value / lead.value);
+      return amount > 0 ? [{ ...lead, amount }] : [];
+    }
+    return DSA5Payment.splitAmount(this.roundMoney(value), currencies).filter((c) => c.amount > 0);
+  }
+
+  static formatMoney(value, actor = null) {
+    const coins = this.splitCoins(value, actor);
+    if (!coins) return `${this.roundMoney(value)} S`;
+    return coins.map((c) => `${c.amount} ${c.abbr}`).join(' ') || '-';
+  }
+
+  static formatMoneyHtml(value, actor = null) {
+    const coins = this.splitCoins(value, actor);
+    if (!coins) return foundry.utils.escapeHTML(`${this.roundMoney(value)} S`);
+    const esc = foundry.utils.escapeHTML;
+    return coins.map((c) =>
+      `<span class="nobr">${c.amount} <span data-tooltip="${esc(c.name)}" style="background-image:url('${esc(c.img)}')" class="chatmoney"></span></span>`,
+    ).join(' ') || '-';
   }
 
   static isFeatured(item) {
@@ -284,7 +312,7 @@ export default class MerchantStallHelper {
     const sellingFactor = Number(actor?.system?.merchant?.sellingFactor) || 1;
     const userFactor = Number(getProperty(actor?.system, `merchant.factors.sellingFactor.${game.user?.id}`)) || 1;
     // Stall UI is player-facing (incl. GM player-view preview): never expose sell/buy factors.
-    const tileOpts = { isLoot, isGM, sellingFactor, userFactor };
+    const tileOpts = { isLoot, isGM, sellingFactor, userFactor, actor };
     const goods = this.flattenInventory(inventory, tileOpts);
     let services = isLoot ? [] : this.flattenServices(inventory, tileOpts);
     const chips = this.chipsFromTiles(goods);
@@ -322,7 +350,8 @@ export default class MerchantStallHelper {
             ...tile,
             hasCustomPrice,
             payPrice,
-            payPriceLabel: this.formatMoney(payPrice),
+            payPriceLabel: this.formatMoney(payPrice, actor),
+            payPriceHtml: this.formatMoneyHtml(payPrice, actor),
             unaffordable: !isGM && !!friend?.name && payPrice > purse,
             hook: '',
           };
@@ -348,14 +377,16 @@ export default class MerchantStallHelper {
         : !tiles.length && !services.length && (state.specials || !featured.length),
       buyerPurse: {
         total: purse,
-        label: this.formatMoney(purse),
+        label: this.formatMoney(purse, actor),
+        html: this.formatMoneyHtml(purse, actor),
         coins: friendMoney?.coins || [],
         expanded: purseExpanded,
         hidden: false,
       },
       merchantPurse: {
         total: merchantTotal,
-        label: this.formatMoney(merchantTotal),
+        label: this.formatMoney(merchantTotal, actor),
+        html: this.formatMoneyHtml(merchantTotal, actor),
         coins: merchantMoney?.coins || [],
         expanded: purseExpanded,
         hidden: !isGM && !!actor?.system?.merchant?.hideMoney,
@@ -393,6 +424,7 @@ export default class MerchantStallHelper {
     isGM = false,
     sellingFactor = 1,
     userFactor = 1,
+    actor = null,
   } = {}) {
     const featured = this.isFeatured(item);
     const listPrice = this.listPrice(item);
@@ -410,11 +442,14 @@ export default class MerchantStallHelper {
       dataType,
       qty: Number(item.system?.quantity?.value) || 0,
       price,
-      priceLabel: isLoot ? '' : this.formatMoney(price),
+      priceLabel: isLoot ? '' : this.formatMoney(price, actor),
       listPrice,
-      listPriceLabel: isLoot ? '' : this.formatMoney(listPrice),
+      listPriceLabel: isLoot ? '' : this.formatMoney(listPrice, actor),
       merchantPrice,
-      merchantPriceLabel: isLoot ? '' : this.formatMoney(merchantPrice),
+      merchantPriceLabel: isLoot ? '' : this.formatMoney(merchantPrice, actor),
+      priceHtml: isLoot ? '' : this.formatMoneyHtml(price, actor),
+      listPriceHtml: isLoot ? '' : this.formatMoneyHtml(listPrice, actor),
+      merchantPriceHtml: isLoot ? '' : this.formatMoneyHtml(merchantPrice, actor),
       customPriceTag: customPriceTag || '',
       hook: this.hookLine(item, { isGM }),
       featured,

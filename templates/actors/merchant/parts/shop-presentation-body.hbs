@@ -56,15 +56,15 @@
             </div>
             <div class="dsa-shop-presentation__price-row">
               <span class="dsa-shop-presentation__price-label">{{localize 'MERCHANT.price.base'}}</span>
-              <span class="dsa-shop-presentation__price-value">{{tile.listPriceLabel}}</span>
+              <span class="dsa-shop-presentation__price-value">{{{tile.listPriceHtml}}}</span>
             </div>
             <div class="dsa-shop-presentation__price-row">
               <span class="dsa-shop-presentation__price-label">{{localize 'MERCHANT.price.merchant'}}</span>
-              <span class="dsa-shop-presentation__price-value">{{tile.merchantPriceLabel}}</span>
+              <span class="dsa-shop-presentation__price-value">{{{tile.merchantPriceHtml}}}</span>
             </div>
             <div class="dsa-shop-presentation__price-row">
               <label class="dsa-shop-presentation__price-label" for="presentation-custom-{{tile.id}}">{{localize 'MERCHANT.price.custom'}}</label>
-              <input id="presentation-custom-{{tile.id}}" class="customPriceTag" type="number" step="0.01" value="{{tile.customPriceTag}}" />
+              <input id="presentation-custom-{{tile.id}}" class="customPriceTag" type="number" step="0.01" value="{{tile.customPriceTag}}" data-tooltip="MERCHANT.customPriceBaseHint" />
             </div>
           </div>
           {{else}}
@@ -72,7 +72,7 @@
             <span class="dsa-shop-presentation__qty-label">{{localize 'quantity'}}</span>
             <span class="dsa-shop-presentation__qty-value">{{tile.qty}}</span>
           </p>
-          <p class="dsa-shop-presentation__price">{{tile.payPriceLabel}}</p>
+          <p class="dsa-shop-presentation__price">{{{tile.payPriceHtml}}}</p>
           {{/if}}
           <button type="button" class="sheetButton dsa-shop-presentation__buy"
             data-action="tradeWrapper" data-fct="buyItem" data-price="{{tile.payPrice}}"

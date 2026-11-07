@@ -33,6 +33,16 @@
 </div>
 
 <div class="groupbox">
+  <div class="form-group">
+    <label>{{localize 'MERCHANT.currencyPack'}}</label>
+    <select name="system.merchant.shop.currencyPack">
+      {{selectOptions currencyPackChoices selected=shop.currencyPack blank=""}}
+    </select>
+    <p class="hint">{{localize 'MERCHANT.currencyPackHint'}}</p>
+  </div>
+</div>
+
+<div class="groupbox">
   <legend class="table-title lineheight" data-tooltip="MERCHANT.priceTier.hint">{{localize 'MERCHANT.sellingFactor'}}</legend>
   <div class="dsa-factor-row flexrow flexAlignCenter">
     {{> systems/dsa5/templates/system/parts/icon-range.hbs steps=priceTierSteps value=shop.priceTier
@@ -41,7 +51,7 @@
       classes="dsa-factor-row__input"}}
   </div>
   <div class="dsa-info-box dsam-2">
-    <p class="dsa-info-text">{{localize 'MERCHANT.pricePreview' list=sellPreview.list shop=sellPreview.shop tier=shop.priceTier}}</p>
+    <p class="dsa-info-text">{{localize 'MERCHANT.pricePreview' list=sellPreview.listLabel shop=sellPreview.shopLabel tier=shop.priceTier}}</p>
   </div>
 </div>
 
@@ -54,7 +64,7 @@
       classes="dsa-factor-row__input"}}
   </div>
   <div class="dsa-info-box dsam-2">
-    <p class="dsa-info-text">{{localize 'MERCHANT.buyPreview' list=buyPreview.list shop=buyPreview.shop}}</p>
+    <p class="dsa-info-text">{{localize 'MERCHANT.buyPreview' list=buyPreview.listLabel shop=buyPreview.shopLabel}}</p>
   </div>
 </div>
 

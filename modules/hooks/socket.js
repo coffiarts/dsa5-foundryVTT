@@ -23,6 +23,7 @@ import QueryOrchestrator from '../system/queries/query-orchestrator.js';
 import MagicAnalysisQueryService from '../system/queries/magic-analysis-query.js';
 import TransactionSummaryService from '../system/payment/transaction-summary.js';
 import MerchantShopPresence from '../system/merchant/merchant-shop-presence.js';
+import MerchantStallHelper from '../system/merchant/merchant-stall.js';
 import TrapData from '../data/item/trap.js';
 import RandomVictim from '../system/helpers/random-victim.js';
 
@@ -190,8 +191,17 @@ export function connectSocket() {
         break;
       case 'trade':
         {
+          // Only the active GM settles a trade; otherwise every connected client would run it
+          if (!DSA5_Utility.isActiveGM(true)) break;
           const source = data.payload.source.token ? game.actors.tokens[data.payload.source.token] : game.actors.get(data.payload.source.actor);
           const target = data.payload.target.token ? game.actors.tokens[data.payload.target.token] : game.actors.get(data.payload.target.actor);
+          // Authoritative check: closed shops reject player trades (missing sender counts as non-GM)
+          const shop = data.payload.buy ? source : target;
+          if (MerchantSheetDSA5.isShopClosedFor(shop, game.users.get(data.payload.senderId))) break;
+          // Only items the stall actually offers may be traded (not worn gear, hidden or trade-locked items)
+          const item = source?.items.get(data.payload.itemId);
+          const isLoot = shop?.system?.merchant?.merchantType === 'loot';
+          if (!game.users.get(data.payload.senderId)?.isGM && !MerchantStallHelper.isShoppable(item, { isLoot })) break;
           MerchantSheetDSA5.finishTransaction(source, target, data.payload.price, data.payload.itemId, data.payload.buy, data.payload.amount);
         }
         break;

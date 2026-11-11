@@ -15,7 +15,7 @@
   {{/if}}
 
   {{#if isGM}}
-  <div class="row-section">
+  <div class="row-section wrap">
     <div class="col two form-group" data-tooltip="MERCHANT.hidePlayerHint">
       <label>{{localize 'MERCHANT.hidePlayer'}}</label>
       {{formInput systemFields.merchant.fields.hidePlayer value=document.system.merchant.hidePlayer}}
@@ -32,8 +32,8 @@
       {{formInput systemFields.merchant.fields.hideMoney value=document.system.merchant.hideMoney}}
     </div>
     {{/if}}
-    {{#if (eq document.system.merchant.merchantType "loot")}}
-    <div class="col two form-group" data-tooltip="MERCHANT.lockedHint">
+    {{#if (or (eq document.system.merchant.merchantType "merchant") (eq document.system.merchant.merchantType "loot"))}}
+    <div class="col two form-group" data-tooltip="{{#if (eq document.system.merchant.merchantType "merchant")}}MERCHANT.lockedShopHint{{else}}MERCHANT.lockedHint{{/if}}">
       <label>{{localize 'MERCHANT.locked'}}</label>
       {{formInput systemFields.merchant.fields.locked value=document.system.merchant.locked}}
     </div>

@@ -265,6 +265,9 @@ export default class MerchantStallHelper {
     if (merchant?.merchantType === 'loot' && merchant?.locked) {
       blockers.push({ id: 'lockedLoot', label: _loc('MERCHANT.stall.lockedLoot') });
     }
+    if (merchant?.merchantType === 'merchant' && merchant?.locked) {
+      blockers.push({ id: 'closedShop', label: _loc('MERCHANT.stall.closedShop') });
+    }
     return blockers;
   }
 

@@ -880,7 +880,16 @@ export const MerchantSheetMixin = (superclass) =>
       await this.transferItem(tradeFriend, this.actor, dataset, false, clickTarget);
     }
 
+    /** Shop closed for trading: merchant flagged `locked`. GMs may still trade. */
+    static isShopClosedFor(shop, user) {
+      const merchant = shop?.system?.merchant;
+      return !user?.isGM && merchant?.merchantType === 'merchant' && !!merchant.locked;
+    }
+
     static async _tradeWrapper(ev, target) {
+      if (this.constructor.isShopClosedFor(this.actor, game.user)) {
+        return ui.notifications.warn('MERCHANT.stall.closedShop', { localize: true });
+      }
       const dataset = { ...target.dataset };
       dataset.itemId = this._getItemId(target);
 
@@ -959,6 +968,8 @@ export const MerchantSheetMixin = (superclass) =>
       const canAfford = this.constructor.noNeedToPay(target, source, totalPrice)
         || (await DSA5Payment.canPay(target, totalPrice, true)).success;
       if (!canAfford) return;
+      // Player trades are settled by the active GM via socket; without one nothing would happen
+      if (!game.user.isGM && !game.users.activeGM) return ui.notifications.warn('DSAError.requiresGM', { localize: true });
 
       if (!isService) this.#playTradeFlyAnimation(clickTarget, buy);
 
@@ -975,6 +986,7 @@ export const MerchantSheetMixin = (superclass) =>
             itemId,
             buy,
             amount,
+            senderId: game.user.id,
           },
         });
       }

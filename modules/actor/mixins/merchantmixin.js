@@ -1178,8 +1178,11 @@ export const MerchantSheetMixin = (superclass) =>
 
     getTradeFriend() {
       const controlledActor = canvas?.tokens?.controlled?.length === 1 ? canvas.tokens.controlled[0].actor : undefined;
+      // The merchant itself (or its own world/token counterpart) is never its own trade partner
+      const isSelf = (actor) =>
+        actor.uuid === this.actor.uuid || (actor.id === this.actor.id && (!actor.isToken || !this.actor.isToken));
       return [this.otherTradeFriend, game.user.character, controlledActor].find((actor) =>
-        this.constructor.tradeFriendTypes.has(actor?.type),
+        this.constructor.tradeFriendTypes.has(actor?.type) && !isSelf(actor),
       );
     }
 

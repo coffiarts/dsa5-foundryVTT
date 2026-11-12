@@ -14,7 +14,7 @@
     <h3 class="underlined-header">{{localize 'MERCHANT.stall.specials'}}</h3>
     <div class="dsa-shop-grid dsa-shop-grid--specials">
       {{#each stall.specials as |tile|}}
-      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=true actionFct="buyItem" actionIcon="fas fa-exchange-alt" actionTooltip="MERCHANT.exchange"}}
+      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=true allowItemDetails=../stall.allowItemDetails actionFct="buyItem" actionIcon="fas fa-exchange-alt" actionTooltip="MERCHANT.exchange"}}
       {{/each}}
     </div>
   </section>
@@ -26,7 +26,7 @@
     {{else}}
     <div class="dsa-shop-grid">
       {{#each stall.tiles as |tile|}}
-      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=true actionFct="buyItem" actionIcon="fas fa-exchange-alt" actionTooltip="MERCHANT.exchange"}}
+      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=true allowItemDetails=../stall.allowItemDetails actionFct="buyItem" actionIcon="fas fa-exchange-alt" actionTooltip="MERCHANT.exchange"}}
       {{/each}}
     </div>
     {{/if}}

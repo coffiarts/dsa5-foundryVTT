@@ -105,7 +105,7 @@
     <h3 class="underlined-header">{{localize 'MERCHANT.stall.specials'}}</h3>
     <div class="dsa-shop-grid dsa-shop-grid--specials">
       {{#each stall.specials as |tile|}}
-      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=false actionFct="buyItem" actionIcon="fas fa-shopping-cart" actionTooltip="MERCHANT.buy"}}
+      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=false allowItemDetails=../stall.allowItemDetails actionFct="buyItem" actionIcon="fas fa-shopping-cart" actionTooltip="MERCHANT.buy"}}
       {{/each}}
     </div>
   </section>
@@ -117,7 +117,7 @@
     {{else}}
     <div class="dsa-shop-grid">
       {{#each stall.tiles as |tile|}}
-      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=false actionFct="buyItem" actionIcon="fas fa-shopping-cart" actionTooltip="MERCHANT.buy"}}
+      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=false allowItemDetails=../stall.allowItemDetails actionFct="buyItem" actionIcon="fas fa-shopping-cart" actionTooltip="MERCHANT.buy"}}
       {{/each}}
     </div>
     {{/if}}
@@ -128,7 +128,7 @@
     <h3 class="underlined-header">{{localize 'MERCHANT.stall.services'}}</h3>
     <div class="dsa-shop-grid dsa-shop-grid--services">
       {{#each stall.services as |tile|}}
-      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=false actionFct="buyItem" actionIcon="fas fa-bell-concierge" actionTooltip="MERCHANT.buy"}}
+      {{> systems/dsa5/templates/actors/merchant/parts/shop-tile.hbs tile=tile isLoot=false allowItemDetails=../stall.allowItemDetails actionFct="buyItem" actionIcon="fas fa-bell-concierge" actionTooltip="MERCHANT.buy"}}
       {{/each}}
     </div>
   </section>

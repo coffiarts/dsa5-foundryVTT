@@ -77,6 +77,34 @@
           <p class="hint">{{localize 'MERCHANT.stall.empty'}}</p>
           {{/each}}
         </div>
+        {{#if stall.services.length}}
+          <div class="row-section table-title">
+            <div class="col"><b>{{localize 'MERCHANT.stall.services'}}</b></div>
+          </div>
+          <div class="row-section wrap rowtable inventory">
+            {{#each stall.services as |tile|}}
+              <div class="col item dsa-shop-hover" data-item-id="{{tile.id}}" data-price-label="{{tile.priceLabel}}">
+                <div class="row-section">
+                  <div class="col eight image {{tile.enchantClass}}">
+                    <div class="image" style="background-image: url('{{tile.img}}')"></div>
+                  </div>
+                  <div class="equipment-item-name col">
+                    {{#if ../stall.allowItemDetails}}
+                      <a data-action="itemEdit">{{tile.name}}</a>
+                    {{else}}
+                      <span>{{tile.name}}</span>
+                    {{/if}}
+                  </div>
+                  <div class="col four center">{{tile.priceLabel}}</div>
+                  <div class="col eight center">{{tile.qty}}</div>
+                  <div class="col eight center">
+                    <a class="button icon noBorder dsadesignbutton fas fa-bell-concierge" data-action="tradeWrapper" data-fct="buyItem" data-price="{{tile.price}}" data-tooltip="MERCHANT.buy"></a>
+                  </div>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        {{/if}}
       </div>
     </div>
     <div class="col two">
